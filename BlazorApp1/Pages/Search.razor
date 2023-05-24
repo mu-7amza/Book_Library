@@ -1,0 +1,32 @@
+﻿@page "/search"
+
+<PageTitle>Search</PageTitle>
+
+
+@using BlazorApp1.Data
+
+@inject BlazorApp1.Iservice.IBookService bookService
+<h1>Search & Filter</h1>
+
+<RadzenGrid AllowPaging="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" PageSize="4" AllowSorting="true" Data="@book" TItem="Book" ColumnWidth="150px">
+
+<Columns>
+        <RadzenGridColumn TItem="Book" Property="ID" Title="Book ID"></RadzenGridColumn>
+        <RadzenGridColumn TItem="Book" Property="Name" Title="Book Name"></RadzenGridColumn>
+        <RadzenGridColumn TItem="Book" Property="Category" Title="Book Category"></RadzenGridColumn>
+        <RadzenGridColumn TItem="Book" Property="Author" Title="Book Author"></RadzenGridColumn>
+
+        <RadzenGridColumn TItem="Book" Property="NumberOfPages" Title="Book Pages"></RadzenGridColumn>
+        
+
+</Columns>
+
+</RadzenGrid>
+
+@code {
+    IEnumerable<Book> book;
+    protected override async Task OnInitializedAsync()
+    {
+        book = await Task.Run(() => bookService.GetBooks1());
+    }
+}

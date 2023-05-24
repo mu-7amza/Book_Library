@@ -1,0 +1,165 @@
+﻿@page "/"
+
+@using BlazorApp1.Data
+@using Syncfusion.Blazor.Grids
+@inject BlazorApp1.Iservice.IBookService bookService
+
+
+<div class="col">
+    <div class="row-md-6">
+        <h1>New Book</h1>
+        <EditForm Model="book" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+            <div>
+                <label for"name">Book Name</label>
+                <InputText id="name" @bind-Value="book.Name" class="form-control"></InputText>
+                <ValidationMessage For = "@(()=> book.Name)" />
+            </div>
+            <div>
+                <label for"category">Book Category</label>
+                <InputSelect id="category" @bind-Value="book.Category" class="form-control">
+                    @foreach (var cat in Enum.GetValues(typeof(CategoryItems)))
+                    {
+                          <option  value="@cat">@cat</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(()=> book.Category)" />
+            </div>
+            <div>
+                <label for"author">Book Author</label>
+                <InputText id="author" @bind-Value="book.Author" class="form-control"></InputText>
+                <ValidationMessage For="@(()=> book.Author)" />
+            </div>
+            <div>
+                <label for"pages">Book Pages</label>
+                <InputNumber id="pages" @bind-Value="book.NumberOfPages" class="form-control"></InputNumber>
+                <ValidationMessage For="@(()=> book.NumberOfPages)" />
+            </div>
+            <br />
+            <div class="align-content-center">
+                <button class="btn btn-dark" @onclick="@(e=>Reset())">Reset</button>
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+            
+        </EditForm>
+    </div>
+    <br />
+    <h1>Book List</h1>
+    <div class="row-md-8">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Book Id</th>
+                    <th>Book Name</th>
+                    <th>Book Category</th>
+                    <th>Book Author</th>
+                    <th>Book Pages</th>
+                    <th>Action</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (books.Count() > 0)
+                {
+                    @foreach (var bk in books)
+                    {
+                        <tr>
+                            <td>@bk.ID</td>
+                            <td>@bk.Name</td>
+                            <td>@bk.Category</td>
+                            <td>@bk.Author</td>
+                            <td>@bk.NumberOfPages</td>
+                            <td>
+                                <button class="btn btn-primary" @onclick="@(e=>Edit(bk.ID))">Edit</button>
+                                <button class="btn btn-danger" @onclick="@(e=>Delete(bk.ID))" style="float:right;">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+@code{
+    Book book = new Book();
+    List<Book> books = new List<Book>();
+    protected override async Task OnInitializedAsync()
+    {
+        GetBooks();
+    }
+    private void GetBooks()
+    {
+        books = bookService.GetBooks();
+    }
+    private void Save()
+    {   
+        bookService.SaveOrUpdate(book);
+        Reset();
+        GetBooks();
+    }
+    private void Reset()
+    {
+        book = new Book();
+    }
+    private void Edit(string bookId)
+    {
+        book = bookService.GetBook(bookId);
+    }
+    private void Delete(string bookId)
+    {
+        bookService.Delete(bookId);
+        GetBooks();
+    }
+    /*
+      <div class="row">
+            <div class="col-md-3">
+                <label>Name</label>
+            </div>
+            <div class="col-md-6">
+                <input @bind="book.Name" style="width:100%;" placeholder="Book Name" />
+        </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Category :</label>
+            </div>
+            <div class="col-md-6">
+                <input @bind="book.Category" style="width:100%;" placeholder="Book Category" />
+        </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Author :</label>
+            </div>
+            <div class="col-md-6">
+                <input @bind="book.Author" style="width:100%;" placeholder="Book Author" />
+        </div>
+
+
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <label>Book Pages</label>
+            </div>
+            <div class="col-md-6">
+                <input @bind="book.NumberOfPages" style="width:100%;" placeholder="Book Pages" />
+        </div>
+
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-danger" @onclick="@(e=>Reset())" style="float:initial;">Reset</button>
+                <button class="btn btn-primary" @onclick="@(e=>Save())" style="float:right;">Save</button>
+        </div>
+     </div>
+    */
+}
